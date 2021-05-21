@@ -1,6 +1,6 @@
 import Head from 'next/head'
 
-export default function Home({ allPostsData }) {
+export default function Home({ data }) {
   return (
     <div className="container">
       <Head>
@@ -10,16 +10,11 @@ export default function Home({ allPostsData }) {
 
       <main>
         <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Welcome to simple docker.
         </h1>
-
-        <p className="description">
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
         <div className="grid">
           <ul>
-          {allPostsData.map(({ summary }) => (
+          {data.map(({ summary }) => (
             <li>{summary}</li>
           ))}
           </ul>
@@ -186,12 +181,18 @@ export default function Home({ allPostsData }) {
   )
 }
 
-export async function getStaticProps() {
-  //const allPostsData = fetch("http://simple-docker-backend:80/api/v1/WeatherForecast")
-  const allPostsData = [{ "summary": "test" }]
-  return {
-    props: {
-      allPostsData
+export async function getServerSideProps(context) {
+  const res = await fetch("http://simple-docker-backend:80/api/v1/WeatherForecast")
+  const data = await res.json()
+
+  console.log(data)
+  if (!data) {
+    return {
+      notFound: true,
     }
+  }
+
+  return {
+    props: { data }
   }
 }
